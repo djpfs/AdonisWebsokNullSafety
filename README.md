@@ -3,7 +3,6 @@
 A high level adonisjs websockets implementation for dart, flutter and web. (Null safety)
 
 Original project [AdonisWebsok](https://github.com/ConsoleTVs/AdonisWebsok)
-
 I only updated some files for null safety
 
 # how to use
@@ -29,10 +28,10 @@ import 'package:adonis_websok_null_safety/adonis_websok.dart';
 
 ```dart
 /// For HTML:
-/// import 'package:adonis_websok/html.dart';
+/// import 'package:adonis_websok_null_safety/html.dart';
 ///
 /// For IO (Flutter, Dart, etc.)
-import 'package:adonis_websok/io.dart';
+import 'package:adonis_websok_null_safety/io.dart';
 
 void main() async {
   // Create a websocket connection and attach a JWT to it.
