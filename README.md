@@ -1,6 +1,6 @@
-# adonis_websok
+# adonis_websok_null_safety
 
-A high level adonisjs websockets implementation for dart, flutter and web.
+A high level adonisjs websockets implementation for dart, flutter and web. (Null safety)
 
 Original project [AdonisWebsok](https://github.com/ConsoleTVs/AdonisWebsok)
 
