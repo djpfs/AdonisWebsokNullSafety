@@ -1,4 +1,5 @@
 /// Copyright (c) 2019 - Èrik Campobadal Forés
+/// Updating the code to null security - João Pedro Freire (@djpfs on github)
 library adonis_websok;
 
 /// For conversions to base64
@@ -10,11 +11,9 @@ import 'dart:async';
 /// Imports @required
 import 'package:meta/meta.dart';
 
-/// Import the websok package.
-import 'package:websok/websok.dart';
-
 /// For channel subscriptions.
-import 'package:adonis_websok/topic_subscription.dart';
+import 'package:adonis_websok_null_safety/topic_subscription.dart';
+import 'package:websokNullSafety/websok.dart';
 
 /// Determines the different package types that can be sent.
 enum PacketType {
@@ -36,10 +35,10 @@ class AWActionRequest {
   bool completed = false;
 
   /// Determines if the action has been accepted.
-  bool accepted;
+  late bool accepted;
 
   /// Determines the reason of failure, if any.
-  String reason;
+  late String reason;
 
   /// Store the callback to check for the action.
   final void Function(
@@ -86,10 +85,10 @@ abstract class AdonisWebsok<S extends Websok> {
   final Map<String, String> query;
 
   /// Extended query that will be merged with the query.
-  Map<String, dynamic> extendedQuery = <String, String>{};
+  Map<String, String> extendedQuery = <String, String>{};
 
   /// Stores the socket connection.
-  S socket;
+  late S socket;
 
   /// Manages the subscriptions.
   Map<String, TopicSubscription> subscriptions = <String, TopicSubscription>{};
@@ -101,11 +100,11 @@ abstract class AdonisWebsok<S extends Websok> {
   List<AWActionRequest> actionRequests = [];
 
   /// Periodic timer used for ping / pong.
-  Timer pingPong;
+  late Timer pingPong;
 
   /// Creates a new instance of AdonisWebsocket.
   AdonisWebsok({
-    @required this.host,
+    required this.host,
     this.port = -1,
     this.tls = false,
     this.path = 'adonis-ws',
@@ -129,13 +128,13 @@ abstract class AdonisWebsok<S extends Websok> {
       {}..addAll(this.query)..addAll(this.extendedQuery);
 
   /// Returns the full URL where the socket is connected.
-  String url() => this.socket?.url();
+  String url() => this.socket.url();
 
   /// Connects to the web socket and sets it up for usage.
   Future<void> connect({
     bool sendRequest = true,
-    void onError(error),
-    void onDone(),
+    void onError(error)?,
+    void onDone()?,
   }) async {
     if (this.isActive) return null;
     if (sendRequest) {
@@ -203,7 +202,7 @@ abstract class AdonisWebsok<S extends Websok> {
   bool hasSubcription(String topic) => this.subscriptions.containsKey(topic);
 
   /// Returns the subscription of a given topic or null if it does not exist.
-  TopicSubscription getSubscription(String topic) =>
+  TopicSubscription? getSubscription(String topic) =>
       this.hasSubcription(topic) ? this.subscriptions[topic] : null;
 
   /// Subscribes to a given topic. The future is completed when the server
@@ -215,18 +214,20 @@ abstract class AdonisWebsok<S extends Websok> {
   /// future value.
   Future<TopicSubscription> subscribe(
     String topic, [
-    AWActionRequest actionRequest,
+    AWActionRequest? actionRequest,
   ]) async {
     // Check if already subscribed.
-    if (this.hasSubcription(topic)) return this.getSubscription(topic);
+    if (this.hasSubcription(topic)) return this.getSubscription(topic)!;
     // Check if there's the need to send the request to the socket.
     if (actionRequest != null) {
       if (actionRequest.completed) {
         // Remove it from the actions list.
         this.actionRequests.removeWhere((a) => identical(a, actionRequest));
-        return actionRequest.accepted
-            ? this.subscriptions[topic] = TopicSubscription(topic, this)
-            : Future.error(actionRequest.reason);
+        if (actionRequest.accepted) {
+          return this.subscriptions[topic] = TopicSubscription(topic, this);
+        } else {
+          return Future.error(actionRequest.reason);
+        }
       }
       return Future(() => this.subscribe(topic, actionRequest));
     }
@@ -254,7 +255,7 @@ abstract class AdonisWebsok<S extends Websok> {
   /// value is true.
   Future<bool> unsubscribe(
     String topic, [
-    AWActionRequest actionRequest,
+    AWActionRequest? actionRequest,
   ]) async {
     // Check if already subscribed.
     if (!this.hasSubcription(topic)) return false;
@@ -266,7 +267,7 @@ abstract class AdonisWebsok<S extends Websok> {
         if (actionRequest.accepted) {
           // Get the subscription and mark it as closed.
           final sub = this.getSubscription(topic);
-          sub.isActive = false;
+          sub!.isActive = false;
           // Remove it from the active subscriptions.
           this.subscriptions.remove(topic);
           return true;
@@ -279,8 +280,7 @@ abstract class AdonisWebsok<S extends Websok> {
     final action = AWActionRequest((action, type, data) {
       if (action.completed) {
         return;
-      }
-      else if (type == PacketType.leave_ack && data['topic'] == topic) {
+      } else if (type == PacketType.leave_ack && data['topic'] == topic) {
         action.accept();
       } else if (type == PacketType.leave_error && data['topic'] == topic) {
         action.reject(data['message']);
@@ -295,7 +295,7 @@ abstract class AdonisWebsok<S extends Websok> {
   /// Closes the conexion with the socket.
   void close() {
     this.isActive = false;
-    this.pingPong?.cancel();
-    this.socket?.close();
+    this.pingPong.cancel();
+    this.socket.close();
   }
 }

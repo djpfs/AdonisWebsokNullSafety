@@ -1,4 +1,6 @@
-import 'package:adonis_websok/adonis_websok.dart';
+import 'package:adonis_websok_null_safety/adonis_websok.dart';
+
+/// Updating the code to null security - João Pedro Freire (@djpfs on github)
 
 /// Represents a topic subscription.
 class TopicSubscription {
@@ -6,7 +8,7 @@ class TopicSubscription {
   final String name;
 
   /// Stores the adonis websocket instance.
-  final AdonisWebsok socket;
+  late final AdonisWebsok socket;
 
   /// Determines if the subscription to the given topic is active.
   bool isActive = true;
@@ -16,7 +18,7 @@ class TopicSubscription {
 
   /// Stores the callback than runs when a new event is received.
   void onEventCallback(String event, dynamic data) =>
-      this.listeners[event] != null ? this.listeners[event](data) : null;
+      this.listeners[event] != null ? this.listeners[event]!(data) : null;
 
   /// Creates a new channel subscription.
   TopicSubscription(this.name, this.socket);

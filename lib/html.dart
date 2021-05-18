@@ -1,20 +1,18 @@
 /// Copyright (c) 2019 - Èrik Campobadal Forés
+/// Updating the code to null security - João Pedro Freire (@djpfs on github)
 library adonis_websok.io;
 
-/// Imports @required
-import 'package:meta/meta.dart';
-
 /// Import the IO package.
-import 'package:websok/html.dart';
 
 /// Import the AdonisWebsok class.
-import 'package:adonis_websok/adonis_websok.dart';
+import 'package:adonis_websok_null_safety/adonis_websok.dart';
+import 'package:websokNullSafety/html.dart';
 
 /// Represents an adonis websocket for IO.
 class IOAdonisWebsok extends AdonisWebsok<HTMLWebsok> {
   /// Creates a new instance of the class.
   IOAdonisWebsok({
-    @required String host,
+    required String host,
     int port = -1,
     bool tls = false,
     String path = 'adonis-ws',

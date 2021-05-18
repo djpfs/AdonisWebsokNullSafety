@@ -2,6 +2,29 @@
 
 A high level adonisjs websockets implementation for dart, flutter and web.
 
+Original project [AdonisWebsok](https://github.com/ConsoleTVs/AdonisWebsok)
+
+I only updated some files for null safety
+
+# how to use
+
+## Package.yaml
+
+```yaml
+publish_to: none
+
+dependencies:
+  adonis_websok_null_safety:
+    git:
+      url: https://github.com/djpfs/AdonisWebsokNullSafety.git
+```
+
+## Import
+
+```dart
+import 'package:adonis_websok_null_safety/adonis_websok.dart';
+```
+
 ## Getting Started
 
 ```dart
